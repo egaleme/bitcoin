@@ -1,6 +1,8 @@
 import * as React from 'react';
 import {View, Text, StatusBar, StyleSheet, SafeAreaView} from 'react-native';
 
+import Home from './src/screen/Home';
+
 export default function App() {
   return (
     <SafeAreaView style={styles.root}>
@@ -9,6 +11,7 @@ export default function App() {
         backgroundColor="transparent"
         barStyle="dark-content"
       />
+      <Home />
     </SafeAreaView>
   );
 }

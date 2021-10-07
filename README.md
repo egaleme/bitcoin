@@ -12,5 +12,10 @@ A simple Portfolio Manager with the following features:
 - Run on Android: `yarn android` or `npm run android`
 - Run Tests: `yarn test` or `npm run test`
 
+## Screenshots
+
+Home Screen
+![Home Screen](./assets/screenshots/home.png)
+
 
 
