@@ -1,0 +1,42 @@
+{
+  "name": "bitcoin",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start": "react-native start",
+    "test": "jest",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@react-navigation/bottom-tabs": "^5.5.2",
+    "@react-navigation/native": "^5.5.0",
+    "@react-navigation/stack": "^5.4.2",
+    "add": "^2.0.6",
+    "axios": "^0.22.0",
+    "papaparse": "^5.3.1",
+    "react": "17.0.2",
+    "react-native": "0.66.0",
+    "react-native-file-viewer": "^2.1.4",
+    "react-native-fs": "^2.18.0",
+    "react-native-gesture-handler": "^1.6.0",
+    "react-native-reanimated": "^1.9.0",
+    "react-native-vector-icons": "^7.0.0",
+    "yarn": "^1.22.15",
+    "zustand": "^3.2.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.15.5",
+    "@babel/runtime": "^7.15.4",
+    "@react-native-community/eslint-config": "^3.0.1",
+    "babel-jest": "^27.2.4",
+    "eslint": "^7.32.0",
+    "jest": "^27.2.4",
+    "metro-react-native-babel-preset": "^0.66.2",
+    "react-test-renderer": "17.0.2"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
+}
