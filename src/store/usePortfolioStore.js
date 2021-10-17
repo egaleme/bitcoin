@@ -13,12 +13,13 @@ export const usePortfolioStore = create((set, get) => ({
   getXchangeRate: async () => {
     try {
       const res = await api.getExchangeRates();
+
       set({xchangeRate: res.data});
     } catch (error) {
       console.log(error);
     }
   },
-  convertCurrency: (type, currency) => {
+  convertCurrency: (type, currency, Portfolios) => {
     const key0 = Object.keys(get().xchangeRate)[0];
     const values0 = Object.values(get().xchangeRate)[0];
     const currentCurrency0 = Object.values(get().xchangeRate)[0]['CAD'];
@@ -31,29 +32,16 @@ export const usePortfolioStore = create((set, get) => ({
         if (x == currency) {
           set({
             portfolios: Portfolios.map(c => {
-              if (c.percentage_to_sell_at == null) {
-                return {
-                  purchase_id: c.purchase_id,
-                  coin_token: c.coin_token,
-                  unit: Number(c.unit),
-                  total_cost: Number(
-                    (c.total_cost * Object.values(get().xchangeRate)[0][x]) /
-                      currentCurrency0,
-                  ),
-                  percentage_to_sell_at: 25,
-                };
-              } else {
-                return {
-                  purchase_id: c.purchase_id,
-                  coin_token: c.coin_token,
-                  unit: Number(c.unit),
-                  total_cost: Number(
-                    (c.total_cost * Object.values(get().xchangeRate)[0][x]) /
-                      currentCurrency0,
-                  ),
-                  percentage_to_sell_at: c.percentage_to_sell_at,
-                };
-              }
+              return {
+                purchase_id: c.purchase_id,
+                coin_token: c.coin_token,
+                unit: c.unit,
+                total_cost: Number(
+                  (c.total_cost * Object.values(get().xchangeRate)[0][x]) /
+                    currentCurrency0,
+                ),
+                percentage_to_sell_at: c.percentage_to_sell_at,
+              };
             }),
             currency: currency,
           });
@@ -64,29 +52,16 @@ export const usePortfolioStore = create((set, get) => ({
         if (x == currency) {
           set({
             portfolios: Portfolios.map(c => {
-              if (c.percentage_to_sell_at == null) {
-                return {
-                  purchase_id: c.purchase_id,
-                  coin_token: c.coin_token,
-                  unit: Number(c.unit),
-                  total_cost: Number(
-                    (c.total_cost * Object.values(get().xchangeRate)[1][x]) /
-                      currentCurrency1,
-                  ),
-                  percentage_to_sell_at: 25,
-                };
-              } else {
-                return {
-                  purchase_id: c.purchase_id,
-                  coin_token: c.coin_token,
-                  unit: Number(c.unit),
-                  total_cost: Number(
-                    (c.total_cost * Object.values(get().xchangeRate)[1][x]) /
-                      currentCurrency1,
-                  ),
-                  percentage_to_sell_at: c.percentage_to_sell_at,
-                };
-              }
+              return {
+                purchase_id: c.purchase_id,
+                coin_token: c.coin_token,
+                unit: Number(c.unit),
+                total_cost: Number(
+                  (c.total_cost * Object.values(get().xchangeRate)[1][x]) /
+                    currentCurrency1,
+                ),
+                percentage_to_sell_at: c.percentage_to_sell_at,
+              };
             }),
             currency: currency,
           });
@@ -95,23 +70,13 @@ export const usePortfolioStore = create((set, get) => ({
     } else {
       set({
         portfolios: Portfolios.map(c => {
-          if (c.percentage_to_sell_at == null) {
-            return {
-              purchase_id: c.purchase_id,
-              coin_token: c.coin_token,
-              unit: Number(c.unit),
-              total_cost: Number(c.total_cost),
-              percentage_to_sell_at: 25,
-            };
-          } else {
-            return {
-              purchase_id: c.purchase_id,
-              coin_token: c.coin_token,
-              unit: Number(c.unit),
-              total_cost: Number(c.total_cost),
-              percentage_to_sell_at: c.percentage_to_sell_at,
-            };
-          }
+          return {
+            purchase_id: c.purchase_id,
+            coin_token: c.coin_token,
+            unit: Number(c.unit),
+            total_cost: Number(c.total_cost),
+            percentage_to_sell_at: c.percentage_to_sell_at,
+          };
         }),
         currency: 'CAD',
       });

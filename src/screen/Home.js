@@ -15,7 +15,8 @@ import {
 import Icon from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {RadioButton} from 'react-native-paper';
+import {ActivityIndicator, RadioButton} from 'react-native-paper';
+import {readString} from 'react-native-csv';
 
 import {
   TEXT_COLOR,
@@ -33,8 +34,39 @@ const amyFace = require('../../assets/images/woman-face.jpg');
 
 const {width, height} = Dimensions.get('screen');
 
-import {usePortfolios} from '../models/usePortfolios';
-import {useCurrency} from '../models/useCurrency';
+const portfoliosData = `purchase_id,coin,unit,total_cost,percentage_to_sell_at
+1,ETH,0.27,780,25
+2,GAS,30,455,
+3,VET,500,45,
+4,GAS,10,250,15
+5,OXT,1000,1200,
+6,ETH,0.5,1000,
+7,BTC,1,13000,50
+8,DOT,4,400,80
+9,ADA,500,800,
+10,UNI,2,30,10
+11,FIL,1,250,80`;
+
+const results = readString(portfoliosData, {header: true});
+const portfoliosSet = results.data.map(c => {
+  if (c.percentage_to_sell_at == '') {
+    return {
+      purchase_id: Number(c.purchase_id),
+      coin_token: c.coin,
+      unit: Number(c.unit),
+      total_cost: Number(c.total_cost),
+      percentage_to_sell_at: 25,
+    };
+  } else {
+    return {
+      purchase_id: Number(c.purchase_id),
+      coin_token: c.coin,
+      unit: Number(c.unit),
+      total_cost: Number(c.total_cost),
+      percentage_to_sell_at: Number(c.percentage_to_sell_at),
+    };
+  }
+});
 
 const coinIcon = item => {
   switch (item.coin_token) {
@@ -79,8 +111,6 @@ const totalPercentPortfolio = portfolios => {
 };
 
 export default function Home() {
-  const {portfolios: portData} = usePortfolios();
-  const {currency: currencies} = useCurrency();
   const portfolios = usePortfolioStore(state => state.portfolios);
   const setPortfolios = usePortfolioStore(state => state.setPortfolios);
   const getXchangeRate = usePortfolioStore(state => state.getXchangeRate);
@@ -91,10 +121,20 @@ export default function Home() {
   const [currencyBtn, setCurrencyBtn] = React.useState(undefined);
 
   React.useEffect(() => {
-    setPortfolios(portData);
-    getXchangeRate();
-    // convertCurrency('DOT', 'NGN');
+    setPortfolios(portfoliosSet);
   }, []);
+
+  React.useEffect(() => {
+    getXchangeRate();
+  }, []);
+
+  if (portfolios.length < 0) {
+    return (
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <ActivityIndicator animating color={PRIMARY_COLOR} size="large" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -162,40 +202,42 @@ export default function Home() {
           <FontAwesome name="gears" size={24} color={TEXT_COLOR} />
         </TouchableOpacity>
       </View>
-      <FlatList
-        data={portfolios}
-        renderItem={({item, key}) => (
-          <View style={styles.coinsContainer} key={key}>
-            <View style={{flexDirection: 'row'}}>
-              <View
-                style={{
-                  padding: 10,
-                  borderRadius: 20,
-                  backgroundColor: `${PRIMARY_COLOR}30`,
-                  width: 40,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                {coinIcon(item)}
+      {portfolios && portfolios.length > 0 ? (
+        <FlatList
+          data={portfolios}
+          renderItem={({item, key}) => (
+            <View style={styles.coinsContainer} key={key}>
+              <View style={{flexDirection: 'row'}}>
+                <View
+                  style={{
+                    padding: 10,
+                    borderRadius: 20,
+                    backgroundColor: `${PRIMARY_COLOR}30`,
+                    width: 40,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  {coinIcon(item)}
+                </View>
+                <View style={{paddingLeft: 10}}>
+                  <Text>{item.coin_token}</Text>
+                  <Text>{item.unit}</Text>
+                </View>
               </View>
-              <View style={{paddingLeft: 10}}>
-                <Text>{item.coin_token}</Text>
-                <Text>{item.unit}</Text>
+              <View>
+                <Text>
+                  {currency} {currencyFormater(item.total_cost)}
+                </Text>
+                <Text>
+                  <Icon name="caretup" size={15} color="green" />{' '}
+                  {item.percentage_to_sell_at}%
+                </Text>
               </View>
             </View>
-            <View>
-              <Text>
-                {currency} {currencyFormater(item.total_cost)}
-              </Text>
-              <Text>
-                <Icon name="caretup" size={15} color="green" />{' '}
-                {item.percentage_to_sell_at}%
-              </Text>
-            </View>
-          </View>
-        )}
-        keyExtractor={(item, index) => index.toString()}
-      />
+          )}
+          keyExtractor={(item, index) => index.toString()}
+        />
+      ) : null}
 
       <Modal
         statusBarTranslucent={true}
@@ -303,7 +345,7 @@ export default function Home() {
                     Alert.alert('Please choose a currency to proceed.');
                     return;
                   }
-                  convertCurrency('DOT', currencyBtn);
+                  convertCurrency('DOT', currencyBtn, portfoliosSet);
                 }}
                 style={{
                   backgroundColor: PRIMARY_COLOR,
@@ -321,7 +363,7 @@ export default function Home() {
                     Alert.alert('Please choose a currency to proceed.');
                     return;
                   }
-                  convertCurrency('ADA', currencyBtn);
+                  convertCurrency('ADA', currencyBtn, portfoliosSet);
                 }}
                 style={{
                   backgroundColor: ACCENT_COLOR,
