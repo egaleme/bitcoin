@@ -33,6 +33,9 @@ const amyFace = require('../../assets/images/woman-face.jpg');
 
 const {width, height} = Dimensions.get('screen');
 
+import {usePortfolios} from '../models/usePortfolios';
+import {useCurrency} from '../models/useCurrency';
+
 const coinIcon = item => {
   switch (item.coin_token) {
     case 'BTC':
@@ -76,7 +79,10 @@ const totalPercentPortfolio = portfolios => {
 };
 
 export default function Home() {
+  const {portfolios: portData} = usePortfolios();
+  const {currency: currencies} = useCurrency();
   const portfolios = usePortfolioStore(state => state.portfolios);
+  const setPortfolios = usePortfolioStore(state => state.setPortfolios);
   const getXchangeRate = usePortfolioStore(state => state.getXchangeRate);
   const convertCurrency = usePortfolioStore(state => state.convertCurrency);
   const currency = usePortfolioStore(state => state.currency);
@@ -85,6 +91,7 @@ export default function Home() {
   const [currencyBtn, setCurrencyBtn] = React.useState(undefined);
 
   React.useEffect(() => {
+    setPortfolios(portData);
     getXchangeRate();
     // convertCurrency('DOT', 'NGN');
   }, []);
